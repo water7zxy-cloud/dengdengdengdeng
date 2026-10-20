@@ -1,0 +1,4 @@
+.setup { gap: 1rem; background: #f8f8f3; }
+.setup h1, .setup p { margin: 0; }
+.start-options, .first-rolls { display: flex; gap: .7rem; flex-wrap: wrap; justify-content: center; }
+.start-options button { background: #fff200; }

@@ -1,0 +1,4 @@
+.die { width: 86px; height: 86px; display: grid; place-items: center; border: 3px solid #111; border-radius: 14px; background: white; box-shadow: 10px 12px 0 rgba(0,0,0,.35); font-size: 2.4rem; transform: rotate(-6deg); }
+.die span { line-height: 1; }
+.central-die { position: fixed; z-index: 18; left: 50%; top: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+.central-die .die { width: 140px; height: 140px; border-radius: 24px; font-size: 4rem; box-shadow: 18px 22px 0 rgba(0,0,0,.34), inset -9px -11px 0 rgba(0,0,0,.08); transform: rotateX(16deg) rotateZ(-15deg); }

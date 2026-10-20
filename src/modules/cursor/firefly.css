@@ -1,0 +1,13 @@
+.firefly-cursor { position: fixed; top: 0; left: 0; width: 44px; height: 52px; z-index: 2147483647; pointer-events: none; user-select: none; display: none; will-change: transform; }
+.firefly-cursor[data-visible="true"] { display: block; }
+.firefly-cursor-active, .firefly-cursor-active * { cursor: none !important; }
+.firefly-aura { position: absolute; left: -18px; top: -9px; width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(ellipse, #fff3a6f2 0%, #fff1a0d9 13%, #ffef99b3 28%, #ffec8a73 44%, #ffe67a33 59%, transparent 75%); animation: firefly-glow 2.2s ease-in-out infinite alternate; }
+.firefly-insect { position: relative; display: block; width: 44px; height: 52px; overflow: visible; filter: drop-shadow(0 0 2px #716a4855) drop-shadow(0 0 6px #fff1a0cc) drop-shadow(0 0 12px #ffe99488); transition: transform 120ms ease; }
+.firefly-wing-left, .firefly-wing-right { transform-origin: 22px 22px; animation: firefly-wing 180ms ease-in-out infinite alternate; }
+.firefly-wing-right { animation-direction: alternate-reverse; }
+.firefly-cursor[data-interactive="true"] .firefly-insect { transform: scale(1.1); }
+.firefly-cursor[data-interactive="true"] .firefly-aura { filter: saturate(1.12); }
+.firefly-cursor[data-pressed="true"] .firefly-insect { transform: scale(.92); }
+@keyframes firefly-glow { from { opacity: .85; transform: scale(.95); } to { opacity: 1; transform: scale(1.1); } }
+@keyframes firefly-wing { from { transform: scaleX(.82); } to { transform: scaleX(1.06); } }
+@media (prefers-reduced-motion: reduce) { .firefly-aura, .firefly-wing-left, .firefly-wing-right { animation: none; } .firefly-insect { transition: none; } }

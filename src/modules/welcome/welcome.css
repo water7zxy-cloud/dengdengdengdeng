@@ -1,0 +1,19 @@
+.welcome { position: relative; width: 100%; height: 100vh; height: 100dvh; padding: 0; overflow: hidden; background: #000; }
+.welcome-art { position: relative; width: min(100vw, calc(100dvh * 16 / 9)); aspect-ratio: 16 / 9; }
+.welcome-cover, .welcome-home-light { display: block; width: 100%; height: 100%; }
+.welcome-cover { opacity: 0; }
+.welcome-cover.is-ready { opacity: 1; }
+.welcome-text-mask { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.welcome-home-light { position: absolute; inset: 0; pointer-events: none; clip-path: ellipse(3.8% 1.85% at 76.9% 63.15%); filter: sepia(1) saturate(12) brightness(1.12); animation: home-light-flash var(--light-duration) ease-in-out both; }
+.welcome-home-glow { position: absolute; left: 76.9%; top: 63.15%; width: 17%; height: 17%; border-radius: 50%; transform: translate(-50%, -50%); background: radial-gradient(ellipse, #ffe600ed 0%, #ffdf00b3 25%, #ffd00066 48%, transparent 72%); pointer-events: none; animation: home-light-flash var(--light-duration) ease-in-out both; }
+.welcome-bulb-entry { position: absolute; left: 51%; top: 65%; width: clamp(110px, 9vw, 175px); transform: translate(-50%, -50%); }
+.welcome-hanging-lamp { position: relative; transform-origin: 50% 0; animation: welcome-bulb-drop 950ms both; }
+.welcome-hanging-lamp::before { content: ''; position: absolute; left: 50%; bottom: calc(100% - 10px); width: 3px; height: 100vh; transform: translateX(-50%); background: #111; pointer-events: none; }
+.welcome .light-button { position: relative; display: block; width: 100%; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; color: #111; box-shadow: none; opacity: 1; }
+.welcome-button-bulb { display: block; width: 100%; height: auto; }
+.welcome .light-button:not(:disabled):active { transform: scale(.96); box-shadow: none; }
+.welcome .light-button:disabled { cursor: default; }
+.welcome .light-button:focus-visible { outline: 3px solid #111; outline-offset: 5px; }
+@keyframes home-light-flash { 0%, 38%, 76%, 100% { opacity: 0; } 16%, 25%, 55%, 64% { opacity: 1; } }
+@keyframes welcome-bulb-drop { 0% { opacity: 0; transform: translateY(-100vh) rotate(-10deg); animation-timing-function: ease-in; } 58% { opacity: 1; transform: translateY(12px) rotate(4deg); animation-timing-function: ease-out; } 76% { transform: translateY(-16px) rotate(-3deg); } 90% { transform: translateY(5px) rotate(1deg); } 100% { opacity: 1; transform: translateY(0) rotate(0); } }
+@media (prefers-reduced-motion: reduce) { .welcome-hanging-lamp { animation: none; } }
