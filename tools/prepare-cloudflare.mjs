@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto'
+import { execFileSync } from 'node:child_process'
 import { mkdir, readFile, readdir, stat, unlink, writeFile } from 'node:fs/promises'
 import { join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -6,22 +7,27 @@ import { fileURLToPath } from 'node:url'
 const root = fileURLToPath(new URL('../', import.meta.url))
 const output = join(root, 'dist')
 const map = await readFile(join(root, 'public/assets/map.png'))
-const chunkSize = 4 * 1024 * 1024
+const chunkSize = 512 * 1024
+const digest = data => createHash('sha256').update(data).digest('hex')
+const mapSha256 = digest(map)
 const paths = []
 const parts = []
 await mkdir(join(output, 'assets/map-parts'), { recursive: true })
 for (let offset = 0, index = 0; offset < map.length; offset += chunkSize, index++) {
-  const path = `/assets/map-parts/part-${String(index).padStart(3, '0')}`
+  const path = `/assets/map-parts/${mapSha256.slice(0, 12)}-${String(index).padStart(3, '0')}.bin`
   const part = map.subarray(offset, offset + chunkSize)
   await writeFile(join(output, path.slice(1)), part)
   paths.push(path)
   parts.push(part)
 }
-const digest = data => createHash('sha256').update(data).digest('hex')
 if (digest(map) !== digest(Buffer.concat(parts))) throw new Error('Map reconstruction checksum mismatch')
-await writeFile(join(output, 'assets/map-parts.json'), JSON.stringify(paths))
+await writeFile(join(output, 'assets/map-parts.json'), JSON.stringify({ paths, bytes: map.length, sha256: mapSha256 }))
+await writeFile(join(output, '_headers'), '/assets/map-parts/*\n  Cache-Control: public, max-age=31536000, immutable\n/assets/map-parts.json\n  Cache-Control: no-cache\n')
 // Only remove Vite's generated copy; the original public asset stays untouched.
 await unlink(join(output, 'assets/map.png'))
+const { version } = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'))
+const commit = process.env.CF_PAGES_COMMIT_SHA || execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim()
+await writeFile(join(output, 'release.json'), JSON.stringify({ version, commit, canonicalUrl: 'https://dengdengdengdeng.cc/', mapSha256 }))
 
 async function inspect(directory) {
   const files = []

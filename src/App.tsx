@@ -1,4 +1,6 @@
 import './styles.css'
+import { useEffect } from 'react'
+import { preloadBoardImage } from './modules/tabletop/useBoardImage'
 import { useGame } from './game/useGame'
 import { useSceneAudio } from './modules/audio/soundtrack'
 import { Welcome } from './modules/welcome/Welcome'
@@ -11,6 +13,9 @@ import { Finale } from './modules/results/Finale'
 export default function App() {
   const { phase, setPhase, selectedRoles, selected, players, firstRolls, activePlayer, lastDie, diceRolling, pawBurst, message, modal, pendingDengdeng, addRole, startFirstRoll, chooseLanternStart, rollForFirst, rollTurn, resolveCard, playRedCard, endGame } = useGame()
   useSceneAudio(phase === 'welcome' ? 'welcome' : phase === 'select' ? 'select' : null)
+  useEffect(() => {
+    if (phase === 'select') void preloadBoardImage()
+  }, [phase])
 
   if (phase === 'welcome') return <Welcome onStart={() => setPhase('select')} />
 
