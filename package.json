@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "build:cloudflare": "VITE_MAP_PARTS=1 npm run build && node tools/prepare-cloudflare.mjs",
+    "build:pages": "VITE_MAP_PARTS=1 npm run build && node tools/prepare-pages.mjs",
     "test": "vitest run",
     "test:watch": "vitest"
   },

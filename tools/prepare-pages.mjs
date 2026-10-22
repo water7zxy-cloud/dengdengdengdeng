@@ -22,11 +22,12 @@ for (let offset = 0, index = 0; offset < map.length; offset += chunkSize, index+
 }
 if (digest(map) !== digest(Buffer.concat(parts))) throw new Error('Map reconstruction checksum mismatch')
 await writeFile(join(output, 'assets/map-parts.json'), JSON.stringify({ paths, bytes: map.length, sha256: mapSha256 }))
-await writeFile(join(output, '_headers'), '/assets/map-parts/*\n  Cache-Control: public, max-age=31536000, immutable\n/assets/map-parts.json\n  Cache-Control: no-cache\n')
+await writeFile(join(output, '.nojekyll'), '')
+await writeFile(join(output, 'CNAME'), 'dengdengdengdeng.cc\n')
 // Only remove Vite's generated copy; the original public asset stays untouched.
 await unlink(join(output, 'assets/map.png'))
 const { version } = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'))
-const commit = process.env.CF_PAGES_COMMIT_SHA || execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim()
+const commit = process.env.GITHUB_SHA || execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim()
 await writeFile(join(output, 'release.json'), JSON.stringify({ version, commit, canonicalUrl: 'https://dengdengdengdeng.cc/', mapSha256 }))
 
 async function inspect(directory) {
@@ -39,8 +40,9 @@ async function inspect(directory) {
   return files
 }
 const files = await inspect(output)
-const oversized = files.filter(file => file.bytes > 25 * 1024 * 1024)
-if (oversized.length) throw new Error(`Cloudflare asset limit exceeded: ${JSON.stringify(oversized)}`)
+const oversized = files.filter(file => file.bytes > 100 * 1024 * 1024)
+if (oversized.length) throw new Error(`GitHub Pages asset limit exceeded: ${JSON.stringify(oversized)}`)
+if (files.reduce((total, file) => total + file.bytes, 0) > 1024 * 1024 * 1024) throw new Error('GitHub Pages site exceeds 1 GiB')
 const cover = files.find(file => /^assets\/cover-[^/]+\.png$/.test(file.path))
 if (!cover) throw new Error('Bundled welcome cover is missing')
 const sourceCover = await readFile(join(root, 'src/modules/welcome/assets/cover.png'))

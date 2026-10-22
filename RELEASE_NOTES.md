@@ -12,7 +12,7 @@
 
 ## 构建与验收范围
 
-Node.js 22；先 `npm ci`，再 `npm run build:cloudflare`，发布目录 `dist`。
+Node.js 22；先 `npm ci`，再 `npm run build:pages`，发布目录 `dist`。通过 GitHub Actions 自动部署到 GitHub Pages，不再使用 Cloudflare；DNS 仍由阿里云管理。
 
 已做 TypeScript/Vite 构建与资源字节校验。按用户要求没有运行游戏测试；实际游玩、声音和动画效果待用户验收。网络速度仍会影响原始高清地图首次加载时间，不承诺消除所有网络故障。
 
