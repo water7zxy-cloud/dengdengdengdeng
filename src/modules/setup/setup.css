@@ -2,3 +2,21 @@
 .setup h1, .setup p { margin: 0; }
 .start-options, .first-rolls { display: flex; gap: .7rem; flex-wrap: wrap; justify-content: center; }
 .start-options button { background: #fff200; }
+.lantern-start { display: flex; flex-direction: column; justify-content: center; gap: 2rem; overflow: hidden; }
+.lantern-start-heading { position: relative; isolation: isolate; margin-top: 240px; padding: 1.3rem 2rem; display: grid; grid-template-columns: max-content; justify-items: center; gap: .65rem; }
+.lantern-start-heading h1 { position: relative; z-index: 1; font-size: 2rem; font-weight: 450; }
+.lantern-start-caption { position: relative; z-index: 1; width: 0; min-width: 100%; box-sizing: border-box; border: 1.5px solid #111; border-radius: 999px; padding: .3rem .5rem; background: #111; color: #fff; font-size: .95rem; line-height: 1.4; text-align: center; white-space: nowrap; }
+.lantern-start-lamp { position: absolute; z-index: 2; width: 240px; height: 220px; left: calc(50% - 120px); top: -250px; transform-origin: top center; animation: lantern-shade-drop 1s cubic-bezier(.2,.8,.3,1) both; }
+.lantern-start-lamp svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.lantern-start-beam { position: absolute; z-index: 0; top: -85px; left: 50%; width: min(90vw, 950px); height: 330px; transform: translateX(-50%); clip-path: polygon(calc(50% - 84px) 0, calc(50% + 84px) 0, 100% 100%, 0 100%); background: linear-gradient(to bottom, #fff20099, #fff20080 65%, #fff20000); animation: lantern-beam-on .5s .75s ease-out both; pointer-events: none; }
+.lantern-start > p, .lantern-start .start-options { position: relative; z-index: 1; }
+@keyframes lantern-shade-drop {
+  0% { transform: translateY(-65vh) rotate(-7deg); }
+  70% { transform: translateY(8px) rotate(3deg); }
+  86% { transform: translateY(-4px) rotate(-1deg); }
+  100% { transform: translateY(0) rotate(0); }
+}
+@keyframes lantern-beam-on { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .lantern-start-lamp, .lantern-start-beam { animation: none; }
+}

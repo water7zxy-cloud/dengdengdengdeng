@@ -1,0 +1,19 @@
+.first-roll-page { position: relative; min-height: 100vh; height: 100dvh; overflow: hidden; background: #df2026; color: #fff; isolation: isolate; }
+.first-roll-heading { position: absolute; z-index: 3; top: 7vh; left: 50%; transform: translateX(-50%); text-align: center; }
+.first-roll-heading h1 { margin: 0 0 .65rem; font-size: clamp(1.8rem, 3vw, 3rem); font-weight: 450; white-space: nowrap; }
+.first-roll-heading p { margin: 0; font-size: 1.15rem; letter-spacing: .06em; }
+.first-roll-results { position: absolute; z-index: 3; top: 9vh; left: 7vw; right: 7vw; display: grid; grid-template-columns: 1fr 1fr; row-gap: 1rem; pointer-events: none; }
+.first-roll-player { display: flex; align-items: center; justify-content: space-between; gap: 2rem; width: clamp(150px, 17vw, 245px); padding: .6rem .2rem; border-bottom: 1px solid #ffffff80; font-size: 1.1rem; }
+.first-roll-player.on-left { grid-column: 1; justify-self: start; }
+.first-roll-player.on-right { grid-column: 2; justify-self: end; }
+.first-roll-player strong { font-size: 1.5rem; font-weight: 500; }
+.first-roll-player.is-current { border-bottom: 3px solid #fff; }
+.first-roll-floor { position: absolute; z-index: 0; top: 50%; bottom: 0; left: 0; right: 0; overflow: hidden; perspective: 500px; perspective-origin: center top; background: #fff; }
+.first-roll-floor > div { position: absolute; width: 260%; height: 300%; left: -80%; top: -1px; transform: rotateX(57deg); transform-origin: center top; background: repeating-conic-gradient(#111 0% 25%, #fff 0% 50%) 50% 0 / 170px 170px; }
+.first-roll-die-stage { position: absolute; z-index: 5; top: 57%; left: 50%; width: 110px; height: 110px; margin: -55px; pointer-events: none; }
+.first-roll-three-die { position: absolute; width: 260px; height: 260px; left: -75px; top: -75px; }
+.first-roll-three-die canvas { display: block; width: 100%; height: 100%; }
+.three-die-fallback { position: absolute; inset: 50px 20px; padding: 1rem; border: 2px solid #111; border-radius: 16px; background: #fff; color: #111; text-align: center; }
+.first-roll-controls { position: absolute; z-index: 4; bottom: 5vh; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: .75rem; }
+.first-roll-controls p { margin: 0; padding: .35rem 1rem; border-radius: 999px; background: #ed1717; color: #fff; }
+.first-roll-controls button { padding: .8rem 2.3rem; }

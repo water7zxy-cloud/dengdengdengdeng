@@ -14,7 +14,7 @@ export const roles: RoleDefinition[] = [
   { id: '跳跳姐姐', title: '体育老师', scene: 'playground', sceneLabel: '操场', ability: '到达操场后，额外完成一张互动卡。', image: '/assets/characters/跳跳姐姐.png' },
   { id: '稻草人', title: '田间守望者', scene: 'field', sceneLabel: '田野', ability: '到达田野后，保护下一位抽到黑卡的玩家。', image: '/assets/characters/稻草人.png' },
   { id: '好好老师', title: '班主任', scene: 'office', sceneLabel: '办公室', ability: '到达办公室后，额外回答一张问题卡。', image: '/assets/characters/好好老师.png' },
-  { id: '糖果叔叔', title: '小卖铺老板', scene: 'shop', sceneLabel: '小卖铺', ability: '到达小卖铺后，返程每回合可额外前进 1 或 2 格。', image: '/assets/characters/糖果叔叔.png' },
+  { id: '糖果叔叔', title: '小卖铺老板', scene: 'shop', sceneLabel: '小卖铺', ability: '到达小卖铺的当回合，可以额外前进 1 或 2 格。', image: '/assets/characters/糖果叔叔.png' },
   { id: '留灯人', title: '家人', scene: 'home', sceneLabel: 'Home 家', ability: '仅去程开始时，可从夜灯区任选合法格出发。', image: '/assets/characters/留灯人.png' },
 ]
 

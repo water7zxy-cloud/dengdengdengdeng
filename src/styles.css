@@ -1,9 +1,16 @@
-:root { font-family: "Noto Sans SC", "PingFang SC", system-ui, sans-serif; color: #111; background: #080808; }
+@font-face {
+  font-family: "Alimama FangYuanTi";
+  src: url('/assets/fonts/AlimamaFangYuanTiVF-Thin.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+:root { font-family: "Alimama FangYuanTi", "PingFang SC", system-ui, sans-serif; color: #111; background: #080808; }
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 1024px; min-height: 100vh; background: #080808; }
 button { font: inherit; cursor: pointer; border-radius: 999px; }
 button:disabled { cursor: not-allowed; opacity: .5; }
-.welcome, .selection, .setup { min-height: 100vh; padding: 4vh 5vw; background: #f8f8f3; display: grid; place-items: center; text-align: center; }
+.welcome, .setup { min-height: 100vh; padding: 4vh 5vw; background: #f8f8f3; display: grid; place-items: center; text-align: center; }
 .light-button, .start-button, .roll-button, .role-card button, .card-actions button, .start-options button, .finish-check { border: 2px solid #111; color: #111; background: #fff; padding: .7rem 1.2rem; box-shadow: 4px 4px 0 #111; transition: transform .15s ease, box-shadow .15s ease; }
 button:not(:disabled):active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 #111; }
 .roll-button { background: #fff200; font-size: 1.1rem; }

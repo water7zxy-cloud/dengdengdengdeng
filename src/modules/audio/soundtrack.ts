@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
+import { MusicTimeline, type MusicName } from './musicTimeline'
 
-type MusicScene = 'welcome' | 'select' | null
+type MusicScene = MusicName | null
 
 export const audioLevels = { music: 1.2, typing: 0.3, button: 0.32, whoosh: 0.32 }
 
@@ -8,13 +9,7 @@ let context: AudioContext | null = null
 let scene: MusicScene = null
 let musicBus: GainNode | null = null
 let scheduler: number | null = null
-let nextBeat = 0
-let beat = 0
-
-const melodies = {
-  welcome: [72, 76, 79, 76, 74, 72, 67, null, 69, 72, 76, 74, 72, 69, 67, null],
-  select: [72, 76, 79, 81, 79, 76, 74, 67, 69, 72, 76, 79, 77, 74, 72, null],
-}
+let timeline = new MusicTimeline()
 
 const frequency = (note: number) => 440 * 2 ** ((note - 69) / 12)
 
@@ -41,43 +36,43 @@ function stopMusic() {
     const bus = musicBus
     bus.gain.cancelScheduledValues(context.currentTime)
     bus.gain.setValueAtTime(bus.gain.value, context.currentTime)
-    bus.gain.linearRampToValueAtTime(0, context.currentTime + 0.35)
-    window.setTimeout(() => bus.disconnect(), 1800)
+    bus.gain.linearRampToValueAtTime(0, context.currentTime + 1.6)
+    window.setTimeout(() => bus.disconnect(), 2500)
   }
   musicBus = null
 }
 
 function startMusic() {
   if (!context || context.state !== 'running' || !scene || scheduler !== null || document.hidden) return
-  const currentScene = scene
   const bus = context.createGain()
   bus.gain.setValueAtTime(0, context.currentTime)
-  bus.gain.linearRampToValueAtTime(audioLevels.music, context.currentTime + 0.65)
   bus.connect(context.destination)
   musicBus = bus
-  nextBeat = context.currentTime + 0.05
-  beat = 0
-  const step = currentScene === 'welcome' ? 0.62 : 0.28
+  let previousGain = -1
   const schedule = () => {
     if (!context || context.state !== 'running' || document.hidden) return
-    if (nextBeat < context.currentTime) nextBeat = context.currentTime + 0.02
-    while (nextBeat < context.currentTime + 0.12) {
-      const note = melodies[currentScene][beat % 16]
+    let event = timeline.next(context.currentTime)
+    while (event) {
+      const { time: nextBeat, beat, step, note, gain } = event
+      const gentle = event.scene === 'welcome'
+      if (gain !== previousGain) {
+        bus.gain.setTargetAtTime(audioLevels.music * gain, nextBeat, .45)
+        previousGain = gain
+      }
       if (note !== null) {
-        tone(note, nextBeat, currentScene === 'welcome' ? 1.25 : 0.42, 0.24, bus)
+        tone(note, nextBeat, gentle ? 1.25 : 0.42, 0.24, bus)
         tone(note + 12, nextBeat, 0.3, 0.025, bus)
       }
       if (beat % 4 === 0) {
         const root = [48, 45, 53, 55][Math.floor(beat / 4) % 4]
-        if (currentScene === 'welcome') {
+        if (gentle) {
           for (const offset of [0, 7, 16]) tone(root + offset, nextBeat, 2.1, 0.07, bus)
         } else {
           tone(root, nextBeat, 0.45, 0.2, bus, 'triangle')
           tone(root + 7, nextBeat + step, 0.25, 0.06, bus)
         }
       }
-      beat++
-      nextBeat += step
+      event = timeline.next(context.currentTime)
     }
   }
   schedule()
@@ -109,13 +104,21 @@ export function useSceneAudio(nextScene: MusicScene) {
       document.removeEventListener('pointerdown', enableAudio)
       document.removeEventListener('keydown', enableAudio)
       document.removeEventListener('visibilitychange', onVisibility)
+      scene = null
+      stopMusic()
+      timeline = new MusicTimeline()
     }
   }, [])
 
   useEffect(() => {
     scene = nextScene
-    enableAudio()
-    return () => { scene = null; stopMusic() }
+    if (nextScene) {
+      timeline.request(nextScene)
+      enableAudio()
+    } else {
+      stopMusic()
+      timeline = new MusicTimeline()
+    }
   }, [nextScene])
 }
 
@@ -212,4 +215,51 @@ export function playButtonSound() {
   const now = context.currentTime
   tone(79, now, 0.07, audioLevels.button, context.destination, 'triangle')
   tone(84, now + 0.045, 0.15, audioLevels.button * 0.55, context.destination)
+}
+
+function softNoise(duration: number, peak: number, fromHz: number, toHz: number) {
+  enableAudio()
+  if (!context || document.hidden) return () => {}
+  const audio = context
+  const now = audio.currentTime + .015
+  const buffer = audio.createBuffer(1, Math.ceil(audio.sampleRate * duration), audio.sampleRate)
+  const samples = buffer.getChannelData(0)
+  for (let i = 0; i < samples.length; i++) samples[i] = Math.random() * 2 - 1
+  const source = audio.createBufferSource()
+  const filter = audio.createBiquadFilter()
+  const lowpass = audio.createBiquadFilter()
+  const envelope = audio.createGain()
+  source.buffer = buffer
+  filter.type = 'bandpass'
+  filter.Q.value = .65
+  filter.frequency.setValueAtTime(fromHz, now)
+  filter.frequency.exponentialRampToValueAtTime(toHz, now + duration)
+  lowpass.type = 'lowpass'
+  lowpass.frequency.value = 1800
+  envelope.gain.setValueAtTime(.0001, now)
+  envelope.gain.exponentialRampToValueAtTime(peak, now + duration * .3)
+  envelope.gain.exponentialRampToValueAtTime(.0001, now + duration)
+  source.connect(filter)
+  filter.connect(lowpass)
+  lowpass.connect(envelope)
+  envelope.connect(audio.destination)
+  source.start(now)
+  source.onended = () => { source.disconnect(); filter.disconnect(); lowpass.disconnect(); envelope.disconnect() }
+  return () => { try { source.stop() } catch { /* Sound already ended. */ } }
+}
+
+export function playCardFlip() {
+  softNoise(.38, .72, 1400, 480)
+}
+
+export function playLanternLowering() {
+  return softNoise(1.05, .17, 700, 230)
+}
+
+export function playSoftChoiceClick() {
+  enableAudio()
+  if (!context || document.hidden) return
+  const now = context.currentTime + .01
+  tone(60, now, .13, .19, context.destination, 'triangle')
+  tone(67, now + .025, .2, .08, context.destination)
 }

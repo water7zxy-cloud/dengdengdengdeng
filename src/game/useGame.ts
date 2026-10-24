@@ -19,13 +19,15 @@ export function useGame() {
   const [pendingDengdeng, setPendingDengdeng] = useState<CardModal | null>(null)
   const [pawBurst, setPawBurst] = useState(false)
   const [diceRolling, setDiceRolling] = useState(false)
+  const [pendingShopBoost, setPendingShopBoost] = useState(false)
 
   const active = players[activePlayer]
   const selected = useMemo(() => selectedRoles.map(roleFor), [selectedRoles])
 
   const addRole = (role: RoleId) => {
-    if (selectedRoles.includes(role) || selectedRoles.length === 6) return
-    setSelectedRoles((current) => [...current, role])
+    setSelectedRoles(current => current.includes(role)
+      ? current.filter(id => id !== role)
+      : current.length < 6 ? [...current, role] : current)
   }
 
   const startFirstRoll = () => {
@@ -40,8 +42,7 @@ export function useGame() {
     setPhase('first-roll')
   }
 
-  const rollForFirst = () => {
-    const roll = randomDie()
+  const rollForFirst = (roll = randomDie()) => {
     const next = [...firstRolls, roll]
     setLastDie(roll)
     setFirstRolls(next)
@@ -49,15 +50,14 @@ export function useGame() {
       const winner = next.reduce((best, score, index) => score > next[best] ? index : best, 0)
       setActivePlayer(winner)
       setMessage(`${players[winner].role} 掷出最高点数，先行。`)
-      window.setTimeout(() => setPhase('playing'), 600)
+      window.setTimeout(() => setPhase('playing'), 1600)
     }
   }
 
   const movePlayer = (index: number, steps: number) => {
     setPlayers((current) => current.map((player, playerIndex) => {
       if (playerIndex !== index) return player
-      const boostedSteps = player.returning && player.returnBoost ? steps + 2 : steps
-      const nextIndex = nextBoardIndex(player.boardIndex, boostedSteps, player.returning)
+      const nextIndex = nextBoardIndex(player.boardIndex, steps, player.returning)
       const reachedShop = board[nextIndex].id === 'shop'
       const reachedHome = board[nextIndex].id === 'home-return'
       return { ...player, boardIndex: nextIndex, returning: player.returning || reachedShop, completed: player.completed || reachedHome }
@@ -108,14 +108,16 @@ export function useGame() {
         setModal({ type: 'question', image: assetPath.question(id), title: '好好老师的额外问题卡', lumens: 2, questionId: id })
       }
       if (sceneEffect.type === 'return-boost') {
-        setPlayers((current) => current.map((entry) => entry.role === '糖果叔叔' ? { ...entry, returnBoost: true } : entry))
-        setMessage('糖果叔叔抵达小卖铺：返程获得额外步数。')
+        setPendingShopBoost(true)
+        setMessage('糖果叔叔抵达小卖铺：本回合请选择额外前进 1 或 2 格。')
+        return false
       }
     }
     return shouldFinishTurnAfterLanding(sceneEffect, opensCard)
   }
 
   const finishTurn = () => {
+    setPendingShopBoost(false)
     setPendingDengdeng(null)
     setModal(null)
     setLastDie(null)
@@ -153,8 +155,21 @@ export function useGame() {
     finishTurn()
   }
 
+  const chooseShopBoost = (steps: 1 | 2) => {
+    if (!pendingShopBoost || !active || diceRolling) return
+    setPendingShopBoost(false)
+    setDiceRolling(true)
+    movePlayer(activePlayer, steps)
+    const nextIndex = nextBoardIndex(active.boardIndex, steps, true)
+    window.setTimeout(() => {
+      setDiceRolling(false)
+      const finish = openTile({ ...active, returning: true, boardIndex: nextIndex }, board[nextIndex])
+      if (finish) finishTurn()
+    }, steps * 120)
+  }
+
   const rollTurn = () => {
-    if (!active) return
+    if (!active || pendingShopBoost || diceRolling || modal) return
     const office = resolveOfficeTurn(active)
     if (!office.canRoll) {
       setPlayers((current) => current.map((entry, index) => index === activePlayer ? { ...entry, ...office.player } : entry))
@@ -169,7 +184,7 @@ export function useGame() {
     window.setTimeout(() => {
       setDiceRolling(false)
       const updated = players[activePlayer]
-      const nextIndex = nextBoardIndex(updated.boardIndex, updated.returning && updated.returnBoost ? result + 2 : result, updated.returning)
+      const nextIndex = nextBoardIndex(updated.boardIndex, result, updated.returning)
       const finish = openTile({ ...updated, boardIndex: nextIndex }, board[nextIndex])
       if (finish) finishTurn()
     }, result * 120)
@@ -180,5 +195,5 @@ export function useGame() {
     if (allDone) setPhase('finished')
   }
 
-  return { phase, setPhase, selectedRoles, selected, players, firstRolls, activePlayer, lastDie, diceRolling, pawBurst, message, modal, pendingDengdeng, addRole, startFirstRoll, chooseLanternStart, rollForFirst, rollTurn, resolveCard, playRedCard, endGame }
+  return { phase, setPhase, selectedRoles, selected, players, firstRolls, activePlayer, lastDie, diceRolling, pawBurst, message, modal, pendingDengdeng, pendingShopBoost, chooseShopBoost, addRole, startFirstRoll, chooseLanternStart, rollForFirst, rollTurn, resolveCard, playRedCard, endGame }
 }

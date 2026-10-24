@@ -19,3 +19,5 @@
 .score-zone em { color: #d71914; font-style: normal; }
 .paw-burst { position: fixed; z-index: 17; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: min(27vw, 240px); line-height: 1; pointer-events: none; filter: drop-shadow(0 8px 0 rgba(0,0,0,.22)); }
 @media (max-height: 760px) { .tabletop { padding-top: .5vh; } }
+.shop-boost-choice { position: fixed; z-index: 100; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 1.5rem 2rem; border: 2px solid #111; border-radius: 24px; background: #fff200; box-shadow: 5px 7px 0 #111; text-align: center; }
+.shop-boost-choice button { margin: .4rem; padding: .7rem 1.5rem; border: 2px solid #111; background: #fff; color: #111; }
