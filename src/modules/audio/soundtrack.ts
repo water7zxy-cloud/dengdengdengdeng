@@ -54,18 +54,21 @@ function startMusic() {
     let event = timeline.next(context.currentTime)
     while (event) {
       const { time: nextBeat, beat, step, note, gain } = event
-      const gentle = event.scene === 'welcome'
+      const gentle = event.scene === 'welcome' || event.scene === 'guide'
+      const guide = event.scene === 'guide'
       if (gain !== previousGain) {
         bus.gain.setTargetAtTime(audioLevels.music * gain, nextBeat, .45)
         previousGain = gain
       }
       if (note !== null) {
-        tone(note, nextBeat, gentle ? 1.25 : 0.42, 0.24, bus)
-        tone(note + 12, nextBeat, 0.3, 0.025, bus)
+        tone(note, nextBeat, guide ? 0.58 : gentle ? 1.25 : 0.42, guide ? 0.19 : 0.24, bus)
+        tone(note + 12, nextBeat, guide ? 0.24 : 0.3, guide ? 0.016 : 0.025, bus)
       }
       if (beat % 4 === 0) {
         const root = [48, 45, 53, 55][Math.floor(beat / 4) % 4]
-        if (gentle) {
+        if (guide) {
+          for (const offset of [0, 7, 16]) tone(root + offset, nextBeat, 1.35, 0.052, bus)
+        } else if (gentle) {
           for (const offset of [0, 7, 16]) tone(root + offset, nextBeat, 2.1, 0.07, bus)
         } else {
           tone(root, nextBeat, 0.45, 0.2, bus, 'triangle')

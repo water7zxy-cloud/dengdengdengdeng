@@ -1,6 +1,6 @@
 import type { Player } from './rules'
 
-export type Phase = 'welcome' | 'select' | 'lantern-start' | 'first-roll' | 'playing' | 'finished'
+export type Phase = 'welcome' | 'select' | 'lantern-start' | 'first-roll' | 'rules-intro' | 'playing' | 'finished'
 export type CardType = 'question' | 'interaction' | 'dengdeng'
 
 export interface GamePlayer extends Player {

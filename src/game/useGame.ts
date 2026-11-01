@@ -50,7 +50,7 @@ export function useGame() {
       const winner = next.reduce((best, score, index) => score > next[best] ? index : best, 0)
       setActivePlayer(winner)
       setMessage(`${players[winner].role} 掷出最高点数，先行。`)
-      window.setTimeout(() => setPhase('playing'), 1600)
+      window.setTimeout(() => setPhase('rules-intro'), 1600)
     }
   }
 

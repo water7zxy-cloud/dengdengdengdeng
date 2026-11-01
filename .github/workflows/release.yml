@@ -1,6 +1,8 @@
 name: Package dengdeng release
 
 on:
+  push:
+    tags: ['v*']
   workflow_dispatch:
 
 permissions:
@@ -17,15 +19,19 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build:pages
-      - name: Create immutable source and static packages
-        run: |
-          mkdir -p release
-          git archive --format=zip --output=release/dengdeng-v0.1.0-source.zip HEAD
-          (cd dist && zip -qr ../release/dengdeng-v0.1.0-static.zip .)
-          (cd release && sha256sum *.zip > SHA256SUMS.txt)
-      - name: Attach packages to draft release
+      - name: Create versioned source and static packages
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release edit v0.1.0 --target "$GITHUB_SHA" --notes-file RELEASE_NOTES.md --draft=true
-          gh release upload v0.1.0 release/*.zip release/SHA256SUMS.txt --clobber
+          VERSION="$(node -p "require('./package.json').version")"
+          TAG="v${VERSION}"
+          if [ "${GITHUB_REF_TYPE}" = "tag" ] && [ "${GITHUB_REF_NAME}" != "${TAG}" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match package version ${TAG}" >&2
+            exit 1
+          fi
+          mkdir -p release
+          git archive --format=zip --output="release/dengdeng-${TAG}-source.zip" HEAD
+          (cd dist && zip -qr "${GITHUB_WORKSPACE}/release/dengdeng-${TAG}-static.zip" .)
+          (cd release && shasum -a 256 *.zip > SHA256SUMS.txt)
+          gh release create "${TAG}" --draft --target "${GITHUB_SHA}" --title "等灯 dengdeng ${TAG}" --notes-file RELEASE_NOTES.md
+          gh release upload "${TAG}" release/*.zip release/SHA256SUMS.txt
