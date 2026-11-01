@@ -1,4 +1,4 @@
-# 等灯 dengdeng v0.3.0
+# 等灯 dengdeng v0.3.1
 
 正式访问入口固定为 https://dengdengdengdeng.cc/ 。本版只更新 GitHub Pages 网站内容，不更改 DNS、域名绑定或 HTTPS 设置。
 
@@ -18,4 +18,4 @@
 
 ## 版本记录
 
-GitHub 主分支提交和 `v0.3.0` 标签共同记录本版源码；GitHub Release 包含源码与静态站点压缩包及 SHA-256。正式访问域名保持不变。
+GitHub 主分支提交和 `v0.3.1` 标签共同记录本版源码；GitHub Release 包含源码与静态站点压缩包及 SHA-256。正式访问域名保持不变。
