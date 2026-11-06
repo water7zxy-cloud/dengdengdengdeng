@@ -191,8 +191,7 @@ export function useGame() {
   }
 
   const endGame = () => {
-    const allDone = players.length > 0 && players.every((player) => player.completed)
-    if (allDone) setPhase('finished')
+    setPhase('finished')
   }
 
   return { phase, setPhase, selectedRoles, selected, players, firstRolls, activePlayer, lastDie, diceRolling, pawBurst, message, modal, pendingDengdeng, pendingShopBoost, chooseShopBoost, addRole, startFirstRoll, chooseLanternStart, rollForFirst, rollTurn, resolveCard, playRedCard, endGame }

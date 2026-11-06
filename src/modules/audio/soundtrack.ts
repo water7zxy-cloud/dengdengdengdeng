@@ -10,6 +10,7 @@ let scene: MusicScene = null
 let musicBus: GainNode | null = null
 let scheduler: number | null = null
 let timeline = new MusicTimeline()
+let lampSwitchAudio: HTMLAudioElement | null = null
 
 const frequency = (note: number) => 440 * 2 ** ((note - 69) / 12)
 
@@ -218,6 +219,16 @@ export function playButtonSound() {
   const now = context.currentTime
   tone(79, now, 0.07, audioLevels.button, context.destination, 'triangle')
   tone(84, now + 0.045, 0.15, audioLevels.button * 0.55, context.destination)
+}
+
+export function playLampSwitch() {
+  enableAudio()
+  if (document.hidden) return
+  lampSwitchAudio ??= new Audio('/assets/sounds/lamp-pull-chain.wav')
+  lampSwitchAudio.preload = 'auto'
+  lampSwitchAudio.volume = .72
+  lampSwitchAudio.currentTime = 0
+  void lampSwitchAudio.play().catch((error: unknown) => console.warn('灯绳音效未能播放', error))
 }
 
 function softNoise(duration: number, peak: number, fromHz: number, toHz: number) {

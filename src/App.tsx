@@ -11,7 +11,7 @@ import { Tabletop } from './modules/tabletop/Tabletop'
 import { Finale } from './modules/results/Finale'
 
 export default function App() {
-  const { phase, setPhase, selectedRoles, selected, players, firstRolls, activePlayer, lastDie, diceRolling, pawBurst, message, modal, pendingDengdeng, pendingShopBoost, chooseShopBoost, addRole, startFirstRoll, chooseLanternStart, rollForFirst, rollTurn, resolveCard, playRedCard, endGame } = useGame()
+  const { phase, setPhase, selectedRoles, selected, players, firstRolls, activePlayer, lastDie, diceRolling, pawBurst, modal, pendingDengdeng, pendingShopBoost, chooseShopBoost, addRole, startFirstRoll, chooseLanternStart, rollForFirst, resolveCard, playRedCard, endGame } = useGame()
   useSceneAudio(phase === 'welcome' ? 'welcome' : phase === 'rules-intro' ? 'guide' : phase === 'select' || phase === 'lantern-start' || phase === 'first-roll' ? 'select' : null)
   useEffect(() => {
     if (phase === 'select') {
@@ -37,10 +37,8 @@ export default function App() {
     lastDie={lastDie}
     diceRolling={diceRolling}
     pawBurst={pawBurst}
-    message={message}
     modal={modal}
     pendingDengdeng={pendingDengdeng}
-    onRoll={rollTurn}
     onResolve={resolveCard}
     onHelp={playRedCard}
     onFinish={endGame}
